@@ -4,14 +4,18 @@
 #include <dt-bindings/zmk/outputs.h>
 #include <dt-bindings/zmk/pointing.h>
 
-#define BASE 0
-#define NAV  1
-#define MOUS 2
-#define BUTN 3
-#define MEDI 4
-#define NUM  5
-#define SYMB 6
-#define FUN  7
+#define BASE      0
+#define UNIX      1
+#define MAC       2
+#define UNIXCOND  3
+#define MACCOND   4
+#define NAV       5
+#define MOUS      6
+#define BUTN      7
+#define MEDI      8
+#define NUM       9
+#define SYMB     10
+#define FUN      11
 
 #define _______ &none
 
@@ -25,6 +29,12 @@
 #define MY_LALT &mt RALT   L
 #define MY_CGUI &mt RGUI   SEMICOLON
 
+#define MY_ACTL &mt LCTRL A
+#define MY_FGUI &mt LGUI  F
+
+#define MY_JGUI &mt RGUI  J
+#define MY_CCTL &mt RCTRL SEMICOLON
+
 #define TG_MEDI &lt MEDI ESCAPE 
 #define TG_NAV  &lt NAV  SPACE 
 #define TG_MOUS &lt MOUS TAB 
@@ -35,13 +45,36 @@
 
 #define TG_BUTN &lt BUTN KC_Z   
 
+#define UNIX_COND(target) \
+unix_cond_##target { \
+    if-layers = <UNIX target>; \
+    then-layer = <UNIXCOND>; \
+};
+
+#define MAC_COND(target) \
+mac_cond_##target { \
+    if-layers = <MAC target>; \
+    then-layer = <MACCOND>; \
+};
+
 / {
-    conditional_layers {
+    conitional_layers {
         compatible = "zmk,conditional-layers";
-        tri_layer {
-            if-layers = <1 2>;
-            then-layer = <3>;
-        };
+        UNIX_COND( NAV)
+        UNIX_COND(MOUS)
+        UNIX_COND(BUTN)
+        UNIX_COND(MEDI)
+        UNIX_COND( NUM)
+        UNIX_COND(SYMB)
+        UNIX_COND( FUN)
+
+        MAC_COND( NAV)
+        MAC_COND(MOUS)
+        MAC_COND(BUTN)
+        MAC_COND(MEDI)
+        MAC_COND( NUM)
+        MAC_COND(SYMB)
+        MAC_COND( FUN)
     };
 
     keymap {
@@ -50,80 +83,120 @@
         base {
             display-name = "BASE";
             bindings = <
-                _______  &kp   Q  &kp   W  &kp   E  &kp   R   &kp T        &kp Y   &kp   U  &kp     I  &kp   O  &kp    P  _______
+                &to UNIX  _______  _______  _______  _______  _______        _______  _______  _______  _______  _______  &to MAC
+                _______   _______  _______  _______  _______  _______        _______  _______  _______  _______  _______  _______
+                _______   _______  _______  _______  _______  _______        _______  _______  _______  _______  _______  _______
+                                            _______  _______  _______        _______  _______  _______
+            >;
+        };
+
+        unix {
+            display-name = "UNIX";
+            bindings = <
+                &trans   &kp   Q  &kp   W  &kp   E  &kp   R   &kp T        &kp Y   &kp   U  &kp     I  &kp   O  &kp    P  &trans
                 _______  MY_AGUI  MY_SALT  MY_DSFT  MY_FCTL   &kp G        &kp H   MY_JCTL    MY_KSFT  MY_LALT   MY_CGUI  _______
                 _______  &kp   Z  &kp   X  &kp   C  &kp   V   &kp B        &kp N   &kp   M  &kp COMMA  &kp DOT  &kp FSLH  _______
                                            TG_MEDI  TG_NAV  TG_MOUS        TG_SYMB  TG_NUM     TG_FUN
             >;
         };
 
+        mac {
+            display-name = "MAC";
+            bindings = <
+                &trans   &kp   Q  &kp   W  &kp   E  &kp   R   &kp T        &kp Y   &kp   U  &kp     I  &kp   O  &kp    P  &trans
+                _______  MY_ACTL  MY_SALT  MY_DSFT  MY_FGUI   &kp G        &kp H   MY_JGUI    MY_KSFT  MY_LALT   MY_CCTL  _______
+                _______  &kp   Z  &kp   X  &kp   C  &kp   V   &kp B        &kp N   &kp   M  &kp COMMA  &kp DOT  &kp FSLH  _______
+                                           TG_MEDI  TG_NAV  TG_MOUS        TG_SYMB  TG_NUM     TG_FUN
+            >;
+        };
+
+        unixcond {
+            display-name = "UNIX";
+            bindings = <
+                _______    _______  _______     _______    _______  _______        _______   _______      _______   _______   _______  _______
+                _______  &kp LGUI  &kp LALT  &kp LSHIFT  &kp LCTRL  _______        _______  &kp RCTRL  &kp RSHIFT  &kp RALT  &kp RGUI  _______
+                _______    _______  _______     _______    _______  _______        _______   _______      _______   _______   _______  _______
+                                                _______    _______  _______        _______   _______      _______
+            >;
+        };
+
+        maccond {
+            display-name = "MAC";
+            bindings = <
+                _______    _______   _______     _______   _______  _______        _______   _______     _______   _______    _______  _______
+                _______  &kp LCTRL  &kp LALT  &kp LSHIFT  &kp LGUI  _______        _______  &kp RGUI  &kp RSHIFT  &kp RALT  &kp RCTRL  _______
+                _______    _______   _______     _______   _______  _______        _______   _______     _______   _______    _______  _______
+                                                 _______   _______  _______        _______   _______     _______
+            >;
+        };
+
         nav {
             display-name = "NAV";
             bindings = <
-                _______   _______   _______     _______    _______  _______        &kp K_CUT  &kp K_COPY  &kp K_PASTE  &kp K_UNDO  _______  _______
-                _______  &kp LGUI  &kp LALT  &kp LSHIFT  &kp LCTRL  _______        &kp  LEFT  &kp   DOWN  &kp      UP  &kp  RIGHT  _______  _______
-                _______   _______   _______     _______    _______  _______        &kp HOME   &kp  PG_DN  &kp   PG_UP  &kp    END  &kp INS  _______
-                                                _______    _______  _______        &kp  RET   &kp   BSPC  &kp    RALT
+                _______  _______  _______  _______  _______  _______        &kp K_CUT  &kp K_COPY  &kp K_PASTE  &kp K_UNDO  _______  _______
+                _______  &trans   &trans   &trans   &trans   _______        &kp  LEFT  &kp   DOWN  &kp      UP  &kp  RIGHT  _______  _______
+                _______  _______  _______  _______  _______  _______        &kp HOME   &kp  PG_DN  &kp   PG_UP  &kp    END  &kp INS  _______
+                                           _______  _______  _______        &kp  RET   &kp   BSPC  &kp    RALT
             >;
         };
 
         mous {
             display-name = "MOUS";
             bindings = <
-                _______   _______   _______     _______    _______  _______        &kp      K_CUT  &kp     K_COPY  &kp  K_PASTE       &kp K_UNDO  _______  _______
-                _______  &kp LGUI  &kp LALT  &kp LSHIFT  &kp LCTRL  _______        &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_UP  &mmv MOVE_RIGHT  _______  _______
-                _______   _______   _______     _______    _______  _______        &msc SCRL_LEFT  &msc SCRL_DOWN  &msc SCRL_UP  &msc SCRL_RIGHT  &kp INS  _______
-                                                _______    _______  _______        &mkp       MB2  &mkp       MB1  &mkp     MB3
+                _______  _______  _______  _______  _______  _______        &kp      K_CUT  &kp     K_COPY  &kp  K_PASTE       &kp K_UNDO  _______  _______
+                _______  &trans   &trans   &trans   &trans   _______        &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_UP  &mmv MOVE_RIGHT  _______  _______
+                _______  _______  _______  _______  _______  _______        &msc SCRL_LEFT  &msc SCRL_DOWN  &msc SCRL_UP  &msc SCRL_RIGHT  &kp INS  _______
+                                           _______  _______  _______        &mkp       MB2  &mkp       MB1  &mkp     MB3
             >;
         };
 
         butn {
             display-name = "BUTN";
             bindings = <
-                _______   _______   _______     _______    _______  _______        &kp K_CUT  &kp K_COPY  &kp K_PASTE  &kp K_UNDO  _______  _______
-                _______  &kp LGUI  &kp LALT  &kp LSHIFT  &kp LCTRL  _______        &kp  LEFT  &kp   DOWN  &kp      UP  &kp  RIGHT  _______  _______
-                _______   _______   _______     _______    _______  _______        &kp HOME   &kp  PG_DN  &kp   PG_UP  &kp    END  &kp INS  _______
-                                                _______    _______  _______        &kp  RET   &kp   BSPC  &kp    RALT
+                _______  _______  _______  _______  _______  _______        &kp K_CUT  &kp K_COPY  &kp K_PASTE  &kp K_UNDO  _______  _______
+                _______  &trans   &trans   &trans   &trans   _______        &kp  LEFT  &kp   DOWN  &kp      UP  &kp  RIGHT  _______  _______
+                _______  _______  _______  _______  _______  _______        &kp HOME   &kp  PG_DN  &kp   PG_UP  &kp    END  &kp INS  _______
+                                           _______  _______  _______        &kp  RET   &kp   BSPC  &kp    RALT
             >;
         };
 
         medi {
             display-name = "MEDI";
             bindings = <
-                &bootloader   _______   _______     _______    _______  _______           _______       _______       _______       _______        _______      _______
-                    _______  &kp LGUI  &kp LALT  &kp LSHIFT  &kp LCTRL  _______        &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-                    _______   _______   _______     _______    _______  _______           _______       _______       _______       _______        _______      _______
-                                                    _______    _______  _______           _______       _______       _______
+                &bootloader  _______  _______  _______  _______  _______           _______       _______       _______       _______        _______      _______
+                    _______  &trans   &trans   &trans   &trans   _______        &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
+                    _______  _______  _______  _______  _______  _______           _______       _______       _______       _______        _______      _______
+                                               _______  _______  _______           _______       _______       _______
             >;
         };
 
         num {
             display-name = "NUM";
             bindings = <
-                _______  &kp  LBKT  &kp N7  &kp N8  &kp  N9  &kp  RBKT       _______    _______     _______   _______   _______  _______
-                _______  &kp   SQT  &kp N4  &kp N5  &kp  N6  &kp EQUAL       _______  &kp RCTRL  &kp RSHIFT  &kp RALT  &kp RGUI  _______
-                _______  &kp GRAVE  &kp N1  &kp N2  &kp  N3  &kp  BSLH       _______    _______     _______   _______   _______  _______
-                                            &kp N0  &kp DOT  &kp MINUS       _______    _______     _______
+                _______  &kp  LBKT  &kp N7  &kp N8  &kp  N9  &kp  RBKT       _______  _______  _______  _______  _______  _______
+                _______  &kp   SQT  &kp N4  &kp N5  &kp  N6  &kp EQUAL       _______  &trans   &trans   &trans   &trans   _______
+                _______  &kp GRAVE  &kp N1  &kp N2  &kp  N3  &kp  BSLH       _______  _______  _______  _______  _______  _______
+                                            &kp N0  &kp DOT  &kp MINUS       _______  _______  _______
             >;
         };
 
         symb {
             display-name = "SYMB";
             bindings = <
-                _______  &kp  LBRC  &kp AMPS  &kp ASTRK  &kp  LPAR  &kp  RBRC       _______    _______     _______   _______   _______  _______
-                _______  &kp   DQT  &kp DLLR  &kp PRCNT  &kp CARET  &kp  PLUS       _______  &kp RCTRL  &kp RSHIFT  &kp RALT  &kp RGUI  _______
-                _______  &kp TILDE  &kp EXCL  &kp    AT  &kp  HASH  &kp  PIPE       _______    _______     _______   _______   _______  _______
-                                              &kp  LPAR  &kp  RPAR  &kp UNDER       _______    _______     _______
+                _______  &kp  LBRC  &kp AMPS  &kp ASTRK  &kp  LPAR  &kp  RBRC       _______  _______  _______  _______  _______  _______
+                _______  &kp   DQT  &kp DLLR  &kp PRCNT  &kp CARET  &kp  PLUS       _______  &trans   &trans   &trans   &trans   _______
+                _______  &kp TILDE  &kp EXCL  &kp    AT  &kp  HASH  &kp  PIPE       _______  _______  _______  _______  _______  _______
+                                              &kp  LPAR  &kp  RPAR  &kp UNDER       _______  _______  _______
             >;
         };
 
         fun {
             display-name = "FUN";
             bindings = <
-                _______  &kp F12  &kp F7  &kp     F8  &kp    F9    _______       _______    _______     _______   _______   _______  &bootloader
-                _______  &kp F11  &kp F4  &kp     F5  &kp    F6  &kp  RALT       _______  &kp RCTRL  &kp RSHIFT  &kp RALT  &kp RGUI  _______
-                _______  &kp F10  &kp F1  &kp     F2  &kp    F3  &kp  RALT       _______    _______     _______   _______   _______  _______
-                                          &kp ESCAPE  &kp SPACE  &kp   TAB       _______    _______     _______
+                _______  &kp F12  &kp F7  &kp     F8  &kp    F9    _______       _______  _______  _______  _______  _______  &bootloader
+                _______  &kp F11  &kp F4  &kp     F5  &kp    F6  &kp  RALT       _______  &trans   &trans   &trans   &trans   _______
+                _______  &kp F10  &kp F1  &kp     F2  &kp    F3  &kp  RALT       _______  _______  _______  _______  _______  _______
+                                          &kp ESCAPE  &kp SPACE  &kp   TAB       _______  _______  _______
             >;
         };
         extra_1 {
